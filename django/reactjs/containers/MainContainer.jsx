@@ -20,7 +20,7 @@ const styles = {
   counters: state.counters,
 }))
 @Radium
-export default class SampleAppContainer extends React.Component {
+export default class MainContainer extends React.Component {
   handleClick() {
     let {dispatch} = this.props;
     dispatch(counterActions.increaseCounter())
@@ -32,10 +32,10 @@ export default class SampleAppContainer extends React.Component {
       <div className="container">
         <div className="row">
           <div className="col-sm-12">
-            <Headline>Sample App!</Headline>
-            <div style={[styles.button]} onClick={() => this.handleClick()}>INCREASE</div>
+            <Headline>Hello World!</Headline>
+            <div style={[styles.button]} onClick={() => this.handleClick()}>CLICK ME</div>
             <p style={[styles.counter]}>{counters.clicks}</p>
-            <p>{process.env.BASE_API_URL}</p>
+            {/*<p>{process.env.BASE_API_URL}</p>*/}
           </div>
         </div>
       </div>

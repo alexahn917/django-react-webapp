@@ -10,7 +10,7 @@ import { Provider } from "react-redux"
 import thunk from "redux-thunk"
 
 import * as reducers from "./reducers"
-import SampleAppContainer from "./containers/SampleAppContainer"
+import MainContainer from "./containers/MainContainer"
 
 let finalCreateStore = compose(
   applyMiddleware(thunk),
@@ -19,14 +19,14 @@ let finalCreateStore = compose(
 let reducer = combineReducers(reducers)
 let store = finalCreateStore(reducer)
 
-class SampleApp extends React.Component {
+class MainApp extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <SampleAppContainer />
+        <MainContainer />
       </Provider>
     )
   }
 }
 
-render(<SampleApp/>, document.getElementById('SampleApp'))
+render(<MainApp/>, document.getElementById('MainApp'))
