@@ -1,25 +1,15 @@
 import React from "react"
-import Radium from "radium"
 
 import { connect } from "react-redux"
+import { Row, Col } from 'react-materialize';
 
 import * as counterActions from "../actions/counterActions"
 import Headline from "../components/Headline"
 
-const styles = {
-  button: {
-    cursor: "pointer",
-  },
-  counter: {
-    color: "blue",
-    fontSize: "20px",
-  }
-}
-
 @connect(state => ({
   counters: state.counters,
 }))
-@Radium
+
 export default class MainContainer extends React.Component {
   handleClick() {
     let {dispatch} = this.props;
@@ -27,18 +17,18 @@ export default class MainContainer extends React.Component {
   }
 
   render() {
-    let {counters} = this.props
+    let {counters} = this.props;
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-sm-12">
-            <Headline>Hello World!</Headline>
-            <div style={[styles.button]} onClick={() => this.handleClick()}>CLICK ME</div>
-            <p style={[styles.counter]}>{counters.clicks}</p>
-            {/*<p>{process.env.BASE_API_URL}</p>*/}
-          </div>
+        <div className="container">
+          <Row>
+            <Col s={12} m={12} l={12} className={'Center'}>
+              <Headline>Sample App!</Headline>
+              <div onClick={() => this.handleClick()}>INCREASE</div>
+              <p>{counters.clicks}</p>
+              <p>{process.env.BASE_API_URL}</p>
+            </Col>
+          </Row>
         </div>
-      </div>
     )
   }
 }
