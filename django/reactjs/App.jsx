@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from 'react-dom';
+import {render} from 'react-dom';
 import Reboot from 'material-ui/Reboot';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import {createMuiTheme, MuiThemeProvider} from 'material-ui/styles';
 import Container from './Pages/Container'
 
 const theme = createMuiTheme({
@@ -23,13 +23,13 @@ const theme = createMuiTheme({
 
 function App() {
   return (
-    <div>
-      <Reboot />
-      <MuiThemeProvider theme={theme}>
-        <Container />
-      </MuiThemeProvider>
-    </div>
+      <div>
+        <Reboot/>
+        <MuiThemeProvider theme={theme}>
+          <Container/>
+        </MuiThemeProvider>
+      </div>
   );
 }
 
-render(<App />, document.querySelector('#app'));
+render(<App/>, document.querySelector('#app'));

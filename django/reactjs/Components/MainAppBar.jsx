@@ -12,67 +12,68 @@ import Button from 'material-ui/Button';
 const drawerWidth = 240;
 
 const styles = theme => ({
-    appBar: {
-        zIndex: theme.zIndex.drawer + 1,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-    },
-    flex: {
-        flex: 1,
-    },
-    appBarShift: {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    },
-    menuButton: {
-        marginLeft: 12,
-        marginRight: 36,
-    },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  menuButton: {
+    marginLeft: 12,
+    marginRight: 36,
+  },
+  flex: {
+    flex: 1
+  },
+  hide: {
+    display: 'none',
+  },
 });
 
 class MainAppBar extends React.Component {
+  onDrawerOpen = () => {
+    this.props.onHandleDrawerOpen();
+  };
 
-    onDrawerOpen = () => {
-        this.props.onHandleDrawerOpen();
-    };
-
-    render() {
-        const {classes, theme, state } = this.props;
-
-        console.log(this.props);
-        return (
-            <AppBar
-                position="absolute"
-                className={classNames(classes.appBar, state.open && classes.appBarShift)}
+  render() {
+    const {classes, theme, open} = this.props;
+    return (
+        <AppBar
+            position="absolute"
+            className={classNames(classes.appBar, open && classes.appBarShift)}
+        >
+          <Toolbar disableGutters={!open}>
+            <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={this.onDrawerOpen.bind(this)}
+                className={classNames(classes.menuButton, open && classes.hide)}
             >
-                <Toolbar disableGutters={!state.open}>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={this.onDrawerOpen.bind(this)}
-                        className={classNames(classes.menuButton, state.open && classes.hide)}
-                    >
-                        <MenuIcon/>
-                    </IconButton>
-                    <Typography variant="title" color="inherit" className={classes.flex}>
-                        Mini variant drawer
-                    </Typography>
-                    <Button color="inherit">Login</Button>
-                </Toolbar>
-            </AppBar>
-        );
-    }
+              <MenuIcon/>
+            </IconButton>
+            <Typography variant="title" color="inherit" noWrap
+                        className={classes.flex}>
+              App Bar Title
+            </Typography>
+            <Button color="inherit">Login</Button>
+          </Toolbar>
+        </AppBar>
+    );
+  }
 }
 
 MainAppBar.propTypes = {
-    classes: PropTypes.object.isRequired,
-    theme: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles, {withTheme: true})(MainAppBar);
