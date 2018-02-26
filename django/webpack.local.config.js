@@ -13,10 +13,10 @@ config.ip = ip
 
 // Use webpack dev server
 config.entry = {
-    MainApp: [
+    App: [
         'webpack-dev-server/client?http://' + ip + ':3000',
         'webpack/hot/only-dev-server',
-        './reactjs/MainApp',
+        './reactjs/App',
     ],
 }
 

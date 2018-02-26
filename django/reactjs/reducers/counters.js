@@ -1,4 +1,4 @@
-import * as sampleActions from "../actions/counterActions"
+import * as sampleActions from "../Actions/counterActions"
 
 const initialState = {
   clicks: 0,

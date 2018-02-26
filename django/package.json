@@ -25,11 +25,11 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.5.1",
-    "material-ui": "^0.20.0",
+    "material-ui": "^1.0.0-beta.35",
+    "material-ui-icons": "^1.0.0-beta.35",
     "radium": "^0.19.6",
     "react-cookie": "^0.4.5",
     "react-dom": "15.x",
-    "react-materialize": "^1.1.2",
     "react-redux": "^4.4.0",
     "redux": "^3.3.1",
     "redux-thunk": "^1.0.3"
