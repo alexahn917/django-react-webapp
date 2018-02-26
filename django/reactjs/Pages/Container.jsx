@@ -8,7 +8,6 @@ import Dashboard from "./Dashboard";
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: 430,
     zIndex: 1,
     overflow: 'hidden',
     position: 'relative',
@@ -45,7 +44,6 @@ class Container extends React.Component {
     const {classes, theme} = this.props;
     return (
         <div className={classes.root}>
-          {/*<SampleDrawer />*/}
           <MainAppBar open={this.state.open}
                       onHandleDrawerOpen={this.handleDrawerOpen.bind(this)}/>
           <MainDrawer open={this.state.open}

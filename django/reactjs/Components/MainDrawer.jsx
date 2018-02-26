@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import {withStyles} from 'material-ui/styles';
 import classNames from 'classnames';
 import Drawer from 'material-ui/Drawer';
-import List from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
-import {mailFolderListItems} from '../Data/tileData';
+import DashboardMenu from "./DashboardMenu";
 
 const drawerWidth = 240;
 
@@ -45,27 +44,23 @@ class MainDrawer extends React.Component {
   render() {
     const {classes, theme, open} = this.props;
     return (
-        <div>
-          <Drawer
-              variant="permanent"
-              classes={{
-                paper: classNames(
-                    classes.drawerPaper, !open
-                    && classes.drawerPaperClose),
-              }}
-              open={open}
-          >
-            <div className={classes.toolbar}>
-              <IconButton
-                  onClick={this.onDrawerClose.bind(this)}
-              >
-                <ChevronLeftIcon/>
-              </IconButton>
-            </div>
-            <Divider/>
-            <List>{mailFolderListItems}</List>
-          </Drawer>
-        </div>
+        <Drawer
+            variant="permanent"
+            classes={{
+              paper: classNames(
+                  classes.drawerPaper, !open
+                  && classes.drawerPaperClose),
+            }}
+            open={open}
+        >
+          <div className={classes.toolbar}>
+            <IconButton onClick={this.onDrawerClose.bind(this)}>
+              <ChevronLeftIcon/>
+            </IconButton>
+          </div>
+          <Divider/>
+          <DashboardMenu/>
+        </Drawer>
     );
   }
 }
