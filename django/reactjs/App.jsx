@@ -1,12 +1,34 @@
 import React from 'react';
 import { render } from 'react-dom';
-import Button from 'material-ui/Button';
+import Reboot from 'material-ui/Reboot';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import Container from './Pages/Container'
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#757ce8',
+      main: '#3a50b5',
+      dark: '#002884',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#ff7961',
+      main: '#f44336',
+      dark: '#ba000d',
+      contrastText: '#000',
+    },
+  },
+});
 
 function App() {
   return (
-    <Button variant="raised" color="primary">
-      Hello World
-    </Button>
+    <div>
+      <Reboot />
+      <MuiThemeProvider theme={theme}>
+        <Container />
+      </MuiThemeProvider>
+    </div>
   );
 }
 
