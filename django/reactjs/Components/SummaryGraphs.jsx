@@ -10,6 +10,9 @@ import ScatterPlotChart from "../Components/Graphs/ScatterPlotChart";
 const styles = theme => ({
   summaryBox: {
     marginTop: 'calc(1%)',
+  },
+  graphBox: {
+    display: 'table',
   }
 });
 
@@ -22,16 +25,16 @@ class SummaryGraphs extends React.Component {
     const {classes, theme} = this.props;
     return (
         <Grid container justify="center" spacing={Number(this.state.spacing)} className={classes.summaryBox}>
-          <Grid key={1} item xs>
+          <Grid key={1} item xs={12} md={6} lg={3} className={classes.graphBox}>
             <LineChart/>
           </Grid>
-          <Grid key={2} item xs>
+          <Grid key={2} item xs={12} md={6} lg={3} className={classes.graphBox}>
             <VerticalBarChart/>
           </Grid>
-          <Grid key={4} item xs>
+          <Grid key={3} item xs={12} md={6} lg={3} className={classes.graphBox}>
             <ScatterPlotChart/>
           </Grid>
-          <Grid key={3} item xs>
+          <Grid key={4} item xs={12} md={6} lg={3} className={classes.graphBox}>
             <RadiarChart/>
           </Grid>
         </Grid>

@@ -12,9 +12,10 @@ const styles = theme => ({
     textAlign: 'center',
   },
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing.unit * 3,
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    display: 'inline-block',
   },
 });
 const data = [{angle: 1, radius: 10},
@@ -41,7 +42,7 @@ class RadiarChart extends React.Component {
           <Typography className={classes.title}>Radial Chart</Typography>
           <RadialChart
               data={data}
-              height={200} width={250}/>
+              height={300} width={300}/>
         </Paper>
     );
   }

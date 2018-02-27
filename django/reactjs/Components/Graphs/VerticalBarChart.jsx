@@ -12,9 +12,10 @@ const styles = theme => ({
     textAlign: 'center',
   },
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing.unit * 3,
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    display: 'inline-block',
   },
 });
 
@@ -31,7 +32,7 @@ class VerticalBarChart extends React.Component {
     return (
         <Paper className={classes.paper}>
           <Typography className={classes.title}>Bar Graph</Typography>
-          <XYPlot height={200} width={250}>
+          <XYPlot height={300} width={300}>
             <HorizontalGridLines/>
             <VerticalBarSeries data={data} animation/>
             <XAxis/>

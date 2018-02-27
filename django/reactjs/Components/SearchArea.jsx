@@ -52,7 +52,7 @@ class SearchArea extends React.Component {
               <QueryResultTable/>
             </CardContent>
             <CardActions>
-              <Button size="small">Expand Raw Data</Button>
+              <Button size="small">Download CSV</Button>
             </CardActions>
           </Card>
         </Grid>

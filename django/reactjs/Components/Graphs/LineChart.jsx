@@ -12,9 +12,10 @@ const styles = theme => ({
     textAlign: 'center',
   },
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing.unit * 3,
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    display: 'inline-block',
   },
 });
 const data = [
@@ -30,7 +31,7 @@ class LineChart extends React.Component {
     return (
         <Paper className={classes.paper}>
           <Typography className={classes.title}>Line Chart</Typography>
-          <XYPlot height={200} width={250}>
+          <XYPlot height={300} width={300}>
             <HorizontalGridLines/>
             <LineSeries data={data} style={{strokeWidth: 2}} animation/>
             <XAxis/>

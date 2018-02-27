@@ -21,6 +21,7 @@ const styles = theme => ({
   },
   container_grid: {
     flexGrow: 1,
+    width: '92vw',
   },
 });
 
@@ -30,7 +31,7 @@ class Dashboard extends React.Component {
     return (
         <main className={classes.content}>
           <div className={classes.toolbar}/>
-          <Grid container spacing={24} xs={4} md={8} lg={12}>
+          <Grid container spacing={16} className={classes.container_grid}>
             <SummaryGraphs/>
             <SearchArea/>
             <ArticleFeeds/>

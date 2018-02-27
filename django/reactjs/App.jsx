@@ -7,9 +7,9 @@ import Container from './Pages/Container'
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: '#757ce8',
-      main: '#3a50b5',
-      dark: '#002884',
+      light: '#5e7ce8',
+      main: '#365fb5',
+      dark: '#1a5284',
       contrastText: '#fff',
     },
     secondary: {
