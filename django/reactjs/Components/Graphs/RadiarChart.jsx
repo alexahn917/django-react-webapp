@@ -42,7 +42,7 @@ class RadiarChart extends React.Component {
           <Typography className={classes.title}>Radial Chart</Typography>
           <RadialChart
               data={data}
-              height={300} width={300}/>
+              height={200} width={350}/>
         </Paper>
     );
   }

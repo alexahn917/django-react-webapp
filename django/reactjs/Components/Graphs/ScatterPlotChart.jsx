@@ -32,7 +32,7 @@ class ScatterPlotChart extends React.Component {
     return (
         <Paper className={classes.paper}>
           <Typography className={classes.title}>Scatter Plot</Typography>
-          <XYPlot height={300} width={300}>
+          <XYPlot height={200} width={350}>
             <HorizontalGridLines/>
             <MarkSeries data={data} animation/>
             <XAxis/>

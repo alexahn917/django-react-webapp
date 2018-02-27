@@ -31,7 +31,7 @@ class LineChart extends React.Component {
     return (
         <Paper className={classes.paper}>
           <Typography className={classes.title}>Line Chart</Typography>
-          <XYPlot height={300} width={300}>
+          <XYPlot height={200} width={350}>
             <HorizontalGridLines/>
             <LineSeries data={data} style={{strokeWidth: 2}} animation/>
             <XAxis/>

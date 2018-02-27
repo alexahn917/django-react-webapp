@@ -32,7 +32,7 @@ class VerticalBarChart extends React.Component {
     return (
         <Paper className={classes.paper}>
           <Typography className={classes.title}>Bar Graph</Typography>
-          <XYPlot height={300} width={300}>
+          <XYPlot height={200} width={350}>
             <HorizontalGridLines/>
             <VerticalBarSeries data={data} animation/>
             <XAxis/>
