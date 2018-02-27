@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Typography from 'material-ui/Typography';
 import {withStyles} from "material-ui/styles/index";
+import Grid from 'material-ui/Grid';
+import ArticleFeeds from "../Components/ArticleFeeds";
+import SummaryGraphs from "../Components/SummaryGraphs";
+import SearchArea from "../Components/SearchArea";
 
 const styles = theme => ({
   content: {
@@ -16,6 +19,9 @@ const styles = theme => ({
     padding: '0 8px',
     ...theme.mixins.toolbar,
   },
+  container_grid: {
+    flexGrow: 1,
+  },
 });
 
 class Dashboard extends React.Component {
@@ -24,7 +30,11 @@ class Dashboard extends React.Component {
     return (
         <main className={classes.content}>
           <div className={classes.toolbar}/>
-          <Typography noWrap>{'Main Content!'}</Typography>
+          <Grid container spacing={24} xs={4} md={8} lg={12}>
+            <SummaryGraphs/>
+            <SearchArea/>
+            <ArticleFeeds/>
+          </Grid>
         </main>
     );
   }
