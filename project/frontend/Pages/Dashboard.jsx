@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Switch, Route, Redirect} from 'react-router-dom'
 import {withStyles} from "material-ui/styles/index";
 import Grid from 'material-ui/Grid';
 import ArticleFeeds from "../Components/ArticleFeeds";
@@ -25,16 +26,24 @@ const styles = theme => ({
     },
 });
 
-class Home extends React.Component {
+class Dashboard extends React.Component {
+    state = {
+        redirect: false
+    };
+
+
+
     render() {
-        const {classes, theme} = this.props;
+        const {classes, redirect, theme} = this.props;
         return (
             <main className={classes.content}>
                 <div className={classes.toolbar}/>
                 <Grid container spacing={16} className={classes.container_grid}>
-                    <SummaryGraphs/>
-                    <SearchArea/>
-                    <ArticleFeeds/>
+                    <Switch>
+                        <Route path='/search' component={SearchArea}/>
+                        <Route path='/chart' component={SummaryGraphs}/>
+                        <Route path='/articles' component={ArticleFeeds}/>
+                    </Switch>
                 </Grid>
             </main>
         );
