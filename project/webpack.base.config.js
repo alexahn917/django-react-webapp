@@ -35,6 +35,11 @@ module.exports = {
     },
     module: {
         rules: [],
-        loaders: []
+        loaders: [
+          {
+            test: /\.scss$/,
+            loaders: ['style', 'css', 'sass']
+          },
+        ]
     }
 };

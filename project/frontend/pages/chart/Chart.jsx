@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from "material-ui/styles/index";
 import Grid from 'material-ui/Grid';
-import LineChart from "../Components/Graphs/LineChart";
-import VerticalBarChart from "../Components/Graphs/VerticalBarChart";
-import RadiarChart from "../Components/Graphs/RadiarChart";
-import ScatterPlotChart from "../Components/Graphs/ScatterPlotChart";
+import LineChart from "../../components/graphs/LineChart";
+import VerticalBarChart from "../../components/graphs/VerticalBarChart";
+import RadiarChart from "../../components/graphs/RadiarChart";
+import ScatterPlotChart from "../../components/graphs/ScatterPlotChart";
 
 const styles = theme => ({
   summaryBox: {
@@ -16,7 +16,7 @@ const styles = theme => ({
   }
 });
 
-class SummaryGraphs extends React.Component {
+class Chart extends React.Component {
   state = {
     spacing: '24',
   };
@@ -42,9 +42,9 @@ class SummaryGraphs extends React.Component {
   }
 }
 
-SummaryGraphs.propTypes = {
+Chart.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, {withTheme: true})(SummaryGraphs);
+export default withStyles(styles, {withTheme: true})(Chart);

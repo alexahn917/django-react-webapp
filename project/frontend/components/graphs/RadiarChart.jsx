@@ -4,6 +4,7 @@ import {withStyles} from "material-ui/styles/index";
 import {RadialChart} from 'react-vis';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
+import '../../../node_modules/react-vis/dist/style.css'
 
 const styles = theme => ({
   title: {

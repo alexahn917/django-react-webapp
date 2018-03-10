@@ -21,20 +21,46 @@ const styles = theme => ({
 
 const data = [
   {x: 0, y: 8},
+  {x: 1, y: 4},
+  {x: 5, y: 4},
+  {x: 2, y: 3},
+  {x: 7, y: 1},
   {x: 1, y: 5},
   {x: 2, y: 4},
   {x: 3, y: 9},
 ];
 
 class ScatterPlotChart extends React.Component {
+  constructor() {
+    super();
+    this.state = {index: null};
+    this._onNearestX = this._onNearestX.bind(this);
+  }
+
+  /**
+   * Event handler for onNearestX.
+   * @param {Object} value Selected value.
+   * @param {index} index Index of the value in the data array.
+   * @private
+   */
+  _onNearestX(datapoint, {index}) {
+    this.setState({index});
+  }
+
   render() {
+    const {index} = this.state;
     const {classes, theme} = this.props;
+    const dat = data.map((d, i) => ({...d, color: i === index ? 1 : 0}));
     return (
         <Paper className={classes.paper}>
           <Typography className={classes.title}>Scatter Plot</Typography>
           <XYPlot height={200} width={350}>
             <HorizontalGridLines/>
-            <MarkSeries data={data} animation/>
+            <MarkSeries
+                data={dat}
+                stroke="white"
+                onNearestXY={this._onNearestX}
+            />
             <XAxis/>
             <YAxis/>
           </XYPlot>
