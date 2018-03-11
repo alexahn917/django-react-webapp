@@ -80,12 +80,12 @@ class MainDrawer extends React.Component {
                 <ListItemText primary="Home"/>
               </ListItem>
             </Link>
-            <Link to='/search' className={classes.link}>
+            <Link to='/query' className={classes.link}>
               <ListItem button>
                 <ListItemIcon>
                   <StarIcon/>
                 </ListItemIcon>
-                <ListItemText primary="Search"/>
+                <ListItemText primary="Query"/>
               </ListItem>
             </Link>
             <Link to='/chart' className={classes.link}>
