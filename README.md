@@ -1,24 +1,48 @@
 # django-react-webapp
 Web Application based on Django back-end and React front-end
 
-Initial Commands:
+All commands should be typed inside `project` repo.
 
-1. Start Django-App
+`cd project`
 
-`django-admin startapp MyApp`
-
-`cd MyApp`
-
-1. Install webpack and plug-ins
-
-`npm install --save-dev react webpack webpack-bundle-tracker babel-cli babel-loader`
-
-2. Craete Config files for Webpack
-
+1. Installing packages for frontend using npm
 ```
-mkdir -p assets/js
-touch webpack.config.js
-touch assets/js/index.js
+npm install
 ```
 
-3. Configure (`webpack.config.js`)[../webpack.config.js]
+2. Constructing virtual environment for backend (need to install python3 first, perhaps through `conda`)
+
+```
+virtualenv -p python3 venv
+```
+
+3. Activating virtualenv
+
+```
+source activate venv/bin/activate
+```
+
+4. Installing packages for the virtualenv
+
+```
+pip install -r requirements
+```
+
+5. Running Frontend
+
+```
+npm run watch
+```
+
+6. Running Backend
+
+```
+(activate virtualenv first at (3))
+python manage.py runserver
+```
+
+7. Access webapp through localhost
+
+```
+localhost:8000
+```
