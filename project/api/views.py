@@ -1,6 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+import pandas as pd
+import numpy as np
+import json
 
 
 class Hello(APIView):
@@ -14,6 +20,7 @@ class Hello(APIView):
         data = {'msg': 'post response!'}
         return Response(data)
 
+
 class Query(APIView):
 
     def get(self, request, format=None):
@@ -21,4 +28,11 @@ class Query(APIView):
 
     def post(self, request, format=None):
         msg = 'we got your query: %s' % request.data['query']
-        return Response(msg)
+        df = pd.DataFrame(np.random.randint(low=0, high=1000, size=(5, 5)),
+                          columns=['stats 1', 'stats 2', 'stats 3', 'stats 4', 'stats 5'])
+        # df_json = df.to_json(orient='records')
+        response = {
+            'type': 'records',
+            'data': df.to_json(orient='records')
+        }
+        return Response(json.dumps(response))

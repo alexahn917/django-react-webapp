@@ -39,6 +39,7 @@ class AnswerCard extends React.Component {
 
   render() {
     const {classes, theme} = this.props;
+    // console.log(this.props.data);
     return (
         <ListItem>
           <Card className={classes.card} elevation={4}>
@@ -46,7 +47,7 @@ class AnswerCard extends React.Component {
               <Typography
                   className={classes.title}>Q: {this.props.query}</Typography>
               <Typography variant="headline" component="h2">
-                {this.props.answer}
+                {this.props.data}
               </Typography>
               <Typography className={classes.pos}>
                 {this.props.headline}

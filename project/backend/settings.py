@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from oracle.config import Config
+from oracle.oracle import Oracle
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'rest_framework',
     'api',
+    'oracle'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -132,3 +136,10 @@ try:
     from .local_settings import *  # flake8: noqa
 except ImportError:
     pass
+
+username = ''
+api_key = ''
+
+# desc_filename = os.path.join(os.getcwd(), 'dataset/sample_query.csv')
+# CONFIG = Config(username, api_key, desc_filename) # construct Config object with customizable domain knowledge
+# ORACLE = Oracle(CONFIG)

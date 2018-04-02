@@ -4,3 +4,10 @@ django-webpack-loader
 djangorestframework
 markdown
 django-filter
+pandas
+numpy
+plotly
+pymining
+nltk
+scipy
+jellyfish
