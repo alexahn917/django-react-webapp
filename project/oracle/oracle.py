@@ -69,13 +69,13 @@ class Oracle:
 
     def is_expr(self, entity):
         '''Holds suite of pre built functions (averages, etc.)'''
-        return entity in config.module_keywords
+        return entity in self.config.module_keywords
 
     def module_filter(self, module):
         module = module()
-        iset = range(len(config.filtered.index))
-        rset = module.execute(iset, config.module_tables['filtered'], False)
-        config.filtered = config.filtered.iloc[rset, :]
+        iset = range(len(self.config.filtered.index))
+        rset = module.execute(iset, self.config.module_tables['filtered'], False)
+        self.config.filtered = self.config.filtered.iloc[rset, :]
 
     def print_module_delegation(self, keyword, module):
         print("delegating computation of '" + keyword + "' to module " + str(module))
@@ -87,17 +87,17 @@ class Oracle:
         plot, status = None, True
         result, names, plot_l = '', [], []
         module = None
-        config.module_tables = {'filtered': config.filtered, 'time_series': config.filtered}
+        self.config.module_tables = {'filtered': self.config.filtered, 'time_series': self.config.filtered}
 
         if b_list is not None:  # if b_list is not empty, perform a plot over distribution of feature
             dist_plot = True
             result = {}
-            for name, group in config.filtered:  # iterate over each group
+            for name, group in self.config.filtered:  # iterate over each group
                 calc = None
-                if entity in config.module_keywords:
-                    module = config.module_keywords[entity]() if module is None else module
-                    calc = module.execute(config.filtered.indices[name],
-                                          config.module_tables['filtered'], True)
+                if entity in self.config.module_keywords:
+                    module = self.config.module_keywords[entity]() if module is None else module
+                    calc = module.execute(self.config.filtered.indices[name],
+                                          self.config.module_tables['filtered'], True)
                 if calc is not None:
                     if (entity not in e_filters or (calc.shape == (1, 1) and
                                                     (re.search(r'(?i)^over$', e_filters[entity][0]) is not None
@@ -118,18 +118,18 @@ class Oracle:
 
         else:  # otherwise plot time series by default
 
-            if entity in config.module_keywords:
+            if entity in self.config.module_keywords:
 
-                module = config.module_keywords[entity]()
-                iset = range(len(config.filtered.index))
-                result = module.execute(iset, config.module_tables['filtered'], False)
-                config.time_series = config.filtered.groupby('Date')  # group filtered dataset by date
+                module = self.config.module_keywords[entity]()
+                iset = range(len(self.config.filtered.index))
+                result = module.execute(iset, self.config.module_tables['filtered'], False)
+                self.config.time_series = self.config.filtered.groupby('Date')  # group filtered dataset by date
 
                 if result.shape == (1, 1):
-                    for name, group in config.time_series:
-                        module = config.module_keywords[entity]() if module is None else module
-                        calc = module.execute(config.time_series.indices[name],
-                                              config.module_tables['time_series'], False)
+                    for name, group in self.config.time_series:
+                        module = self.config.module_keywords[entity]() if module is None else module
+                        calc = module.execute(self.config.time_series.indices[name],
+                                              self.config.module_tables['time_series'], False)
                         calc = calc.iloc[0, 0]
                         if calc is not None:
                             names.append(name)
@@ -137,7 +137,8 @@ class Oracle:
 
                 if plot_l:
                     # plot time series chart
-                    plot = self.automate_plot_by_(names, plot_l, entity, title, 'scatter')
+                    # plot = self.automate_plot_by_(names, plot_l, entity, title, 'scatter')
+                    plot = None
 
         return result, plot, status
 
@@ -150,11 +151,11 @@ class Oracle:
         result = None
 
         eHash = {}
-        for eFilter in config.entityFilters:
-            eFilterIndex = config.qry.find(eFilter[0] + ' ' + eFilter[1])
+        for eFilter in self.config.entityFilters:
+            eFilterIndex = self.config.qry.find(eFilter[0] + ' ' + eFilter[1])
             minDiff = None
             for e in expr:
-                eExprIndex = config.qry.find(e)
+                eExprIndex = self.config.qry.find(e)
                 if minDiff is None or (eFilterIndex - eExprIndex) < minDiff:
                     minDiff = eFilterIndex - eExprIndex
                     eHash[eFilter] = e
@@ -163,42 +164,42 @@ class Oracle:
 
         for i in range(len(criteria)):  # sequentially filter database on entity criteria
 
-            exec_str = '(' + self.perform_filter(config.FILTER, criteria[i], b_feat) + ')'  # perform filter
+            exec_str = '(' + self.perform_filter(self.config.FILTER, criteria[i], b_feat) + ')'  # perform filter
 
             if not b_feat:
-                exec_str = "config.filtered = config.filtered[({0})]".format(exec_str)
+                exec_str = "self.config.filtered = self.config.filtered[({0})]".format(exec_str)
             else:
-                exec_str = "config.filtered = config.filtered.apply(lambda g: ({0}))".format(exec_str)
+                exec_str = "self.config.filtered = self.config.filtered.apply(lambda g: ({0}))".format(exec_str)
             print('\n' + exec_str)
             exec(exec_str)
 
             if b_feat:
-                config.filtered = config.filtered.groupby(b_feat)
+                self.config.filtered = self.config.filtered.groupby(b_feat)
 
             feat = criteria[i][0]
-            config.MOST_RECENT_QUERY.add(feat)  # cache this query as most recent
-            config.ITEMSETS[len(config.ITEMSETS) - 1].add(feat)  # add to frequent itemsets cache
-            config.EXP_DECAY[feat] = 1  # set distance of feature since last fetched to 1
+            self.config.MOST_RECENT_QUERY.add(feat)  # cache this query as most recent
+            self.config.ITEMSETS[len(self.config.ITEMSETS) - 1].add(feat)  # add to frequent itemsets cache
+            self.config.EXP_DECAY[feat] = 1  # set distance of feature since last fetched to 1
 
             for j in range(i, len(criteria)):
-                config.COOCCURENCE_HASH[feat][criteria[j][0]] += 1  # update cooccurrence hash
+                self.config.COOCCURENCE_HASH[feat][criteria[j][0]] += 1  # update cooccurrence hash
 
         for e in expr:
             result, plot, status = self.match_expr(e, b_feat, response,
                                                    eHash)  # sequentially execute all user defined actions
 
         for feat in added:  # restore original columns
-            del config.filtered[feat]
-            del config.DOMAIN_KNOWLEDGE[feat]
+            del self.config.filtered[feat]
+            del self.config.DOMAIN_KNOWLEDGE[feat]
 
-        config.ITEMSETS[len(config.ITEMSETS) - 1] = tuple(config.ITEMSETS[len(config.ITEMSETS) - 1])
+        self.config.ITEMSETS[len(self.config.ITEMSETS) - 1] = tuple(self.config.ITEMSETS[len(self.config.ITEMSETS) - 1])
 
         sample_size = None
         if result is not None:
             if status:  # output textual response
                 if result.shape == (1, 1):
                     result.columns = ['Output']
-                    sample_size = pd.DataFrame([config.filtered.shape[0]])
+                    sample_size = pd.DataFrame([self.config.filtered.shape[0]])
             else:
                 appended = pd.DataFrame()
                 names = []
@@ -210,7 +211,7 @@ class Oracle:
                 appended['name'] = names
                 appended.columns = ['Output', 'name']
                 result = appended
-                sample_size = config.filtered.size().to_frame()
+                sample_size = self.config.filtered.size().to_frame()
             sample_size.columns = ['Sample Sizes']
         else:
             print('\n The output of your query resulted in a sample size of 0. \
@@ -231,13 +232,13 @@ class Oracle:
         entities = []
 
         for i in range(len(e_list)):  # iterate over entity list
-            if e_list[i] == config.GENITIVE:
+            if e_list[i] == self.config.GENITIVE:
                 continue
             entities.append(re.findall(r'^\(?(.+[^)])\)?', e_list[i])[0])
 
         prev_feat = None
         criteria, added, expr = [], [], []
-        rec_item = config.RECOMMENDATION.data[config.qry]  # hash current query into RECOMMENDATIONS hash
+        rec_item = self.config.RECOMMENDATION.data[self.config.qry]  # hash current query into RECOMMENDATIONS hash
         conj = None
 
         for entity in entities:
@@ -245,15 +246,15 @@ class Oracle:
             if self.is_expr(entity):  # check if token is a pre-built expression
                 expr.append(entity)
                 continue
-            elif config.is_conj(entity):  # check if token is a conjunction and tag it
+            elif self.config.is_conj(entity):  # check if token is a conjunction and tag it
                 conj = entity
                 continue
 
             curr_feat = self.match_(entity)  # extract relevant feature
-            start = config.qry.find(entity)
+            start = self.config.qry.find(entity)
             end = start + len(entity)
             rec_item.index_hash[curr_feat] = (start, end)
-            config.RECOMMENDATION.data[config.qry] = rec_item
+            self.config.RECOMMENDATION.data[self.config.qry] = rec_item
 
             if curr_feat is None:
                 return self.user_input(entity)  # prompt user to clarify input
@@ -279,9 +280,9 @@ class Oracle:
                     criteria.append((curr_feat, ['+'.join(val)]))
                 conj = None
 
-        features = [feat for feat in config.RECOMMENDATION.data[config.qry].index_hash]
+        features = [feat for feat in self.config.RECOMMENDATION.data[self.config.qry].index_hash]
         features.sort()  # sort features to specify common key
-        config.RECOMMENDATIONS[str(features)].append(config.RECOMMENDATION)  # hash features in RECOMMENDATIONS
+        self.config.RECOMMENDATIONS[str(features)].append(self.config.RECOMMENDATION)  # hash features in RECOMMENDATIONS
 
         return criteria, added, expr
 
@@ -289,15 +290,15 @@ class Oracle:
 
         '''Execute sequential filters over dataset on supplied filtering criteria'''
 
-        config.MOST_RECENT_QUERY = set()  # reinitialize MOST_RECENT_QUERY
-        config.ITEMSETS.append(set())  # reinitialize ITEMSETS
+        self.config.MOST_RECENT_QUERY = set()  # reinitialize MOST_RECENT_QUERY
+        self.config.ITEMSETS.append(set())  # reinitialize ITEMSETS
 
-        for feat in config.EXP_DECAY:
-            config.EXP_DECAY[feat] += 1  # increment all features distance from being last fetched by 1
+        for feat in self.config.EXP_DECAY:
+            self.config.EXP_DECAY[feat] += 1  # increment all features distance from being last fetched by 1
 
-        config.filtered = config.X.copy()  # reinitialize filtered
-        config.time_series = config.filtered
-        config.module_tables = {'filtered': config.filtered, 'time_series': config.time_series}
+        self.config.filtered = self.config.X.copy()  # reinitialize filtered
+        self.config.time_series = self.config.filtered
+        self.config.module_tables = {'filtered': self.config.filtered, 'time_series': self.config.time_series}
         filters = self.feature_assoc_filters_helper(f_list)  # generate filtering criteria as [[(feature, [values])]]
         grouped, b_list = None, []
 
@@ -308,49 +309,49 @@ class Oracle:
                     2]  # extract filtering operation, criteria, join flag
                 if c_ is None: continue
                 feat = c_[0]
-                config.MOST_RECENT_QUERY.add(feat)
-                config.ITEMSETS[len(config.ITEMSETS) - 1].add(feat)  # update ITEMSETS
-                config.EXP_DECAY[feat] = 1  # set distance since being fetched to 1
+                self.config.MOST_RECENT_QUERY.add(feat)
+                self.config.ITEMSETS[len(self.config.ITEMSETS) - 1].add(feat)  # update ITEMSETS
+                self.config.EXP_DECAY[feat] = 1  # set distance since being fetched to 1
                 for j in range(i, len(f_key)):
-                    config.COOCCURENCE_HASH[feat][f_key[j][1][0]] += 1  # update cooccurence hash
+                    self.config.COOCCURENCE_HASH[feat][f_key[j][1][0]] += 1  # update cooccurence hash
                 if not c_[1]:
                     b_list.append(feat)  # add to b_list if filtering criteria is over a feature's entire distribution
                     continue
                 if conj_ is not None:
                     conj_ = self.substitute_conjunction(conj_)
                     exec_str += " {0} ".format(conj_)
-                if c_[1] in config.module_keywords.values():
+                if c_[1] in self.config.module_keywords.values():
                     self.print_module_delegation(feat, str(c_[1]))
                     self.module_filter(c_[1])
                 else:
                     exec_str += self.perform_filter(f_, c_, False)
             if exec_str:
                 exec_str = '(' + exec_str + ')'
-                exec_str = "config.filtered = config.filtered[({0})]".format(exec_str)
+                exec_str = "self.config.filtered = self.config.filtered[({0})]".format(exec_str)
                 print('\n' + exec_str)
                 exec(exec_str)
 
         if b_list:
             grouped, b_feat = self.by_helper_([b_list, []])
         else:
-            for module in config.clookup:
+            for module in self.config.clookup:
                 if module().set_module():
                     keyword = list(module().get_lexicon())[0]
                     self.print_module_delegation(keyword, str(module))
                     self.module_filter(module)
 
-        return (config.filtered, None) if grouped is None else (grouped, b_feat)
+        return (self.config.filtered, None) if grouped is None else (grouped, b_feat)
 
     def check_filters(self, fname):
 
         max_conf, max_filt = 0, None
 
-        for entry in config.module_keywords:
+        for entry in self.config.module_keywords:
             conf_f = jellyfish.jaro_distance(fname, entry)
             if conf_f > max_conf:
-                max_conf, max_filt = conf_f, config.module_keywords[entry]
+                max_conf, max_filt = conf_f, self.config.module_keywords[entry]
 
-        if max_conf > config.CONF_THRESHOLD:
+        if max_conf > self.config.CONF_THRESHOLD:
             return max_filt
         else:
             return None
@@ -361,9 +362,9 @@ class Oracle:
 
         f_ = []  # initialize result list
         featureHash = {}
-        config.RECOMMENDATION = Recommendation(config.qry)  # initialize RECOMMENDATION to hash on current query
+        self.config.RECOMMENDATION = Recommendation(self.config.qry)  # initialize RECOMMENDATION to hash on current query
         rec_item = RecommendationItem()
-        config.entityFilters, prev_numeric, numeric_token = [], [], None
+        self.config.entityFilters, prev_numeric, numeric_token = [], [], None
 
         for f_item in filters:
 
@@ -375,7 +376,7 @@ class Oracle:
             i, inc, c_flag = 1, False, False
             negated = None
 
-            cset = config.clookup.values()
+            cset = self.config.clookup.values()
             cset = [k for ckey in cset for k in ckey]
 
             while i < len(tokens):  # iterate over each filter in the filtered list
@@ -387,7 +388,7 @@ class Oracle:
                 for t in token:
                     for ckey in cset:
                         jaro = jellyfish.jaro_distance(t, ckey)
-                        if jaro > config.CONF_THRESHOLD:
+                        if jaro > self.config.CONF_THRESHOLD:
                             count += 1
 
                 if count == len(token):
@@ -406,9 +407,9 @@ class Oracle:
 
                 if negated is None:
 
-                    if tokens[0] in config.numericFilters:
+                    if tokens[0] in self.config.numericFilters:
                         if not prev_numeric:
-                            config.entityFilters.append((tokens[0], tokens[i]))
+                            self.config.entityFilters.append((tokens[0], tokens[i]))
                             break
                         else:
                             relevant = prev_numeric.pop()
@@ -424,27 +425,27 @@ class Oracle:
                                 is_filter = True
                                 f_.append([(tokens[0], (tokens[i], filter_to_apply), None)])
                         if not is_filter:
-                            start = config.qry.find(tokens[i])  # start index stored before cached in RECOMMENDATION
+                            start = self.config.qry.find(tokens[i])  # start index stored before cached in RECOMMENDATION
                             end = start + len(tokens[i])  # end index stored before cached in RECOMMENDATION
                             rec_item.index_hash[relevant] = (start, end)
 
                             # set current recommendation item as the value to RECOMMENDATION hashed on the current query
-                            config.RECOMMENDATION.data[config.qry] = rec_item
+                            self.config.RECOMMENDATION.data[self.config.qry] = rec_item
 
                     if val is None and not is_filter:
 
                         cat += tokens[i]
                         joined.append(tokens[i])
 
-                        while (i + 1) < len(tokens) and config.is_conj(
+                        while (i + 1) < len(tokens) and self.config.is_conj(
                                 tokens[i + 1].lower()):  # check if next token is conjunction
                             # otherwise append the next feature value to the running result
                             cat += tokens[i + 1] + tokens[i + 2]
                             joined.append(tokens[i + 2])
                             i += 3
 
-                        for core_entity in config.CORE:
-                            if jellyfish.jaro_distance(core_entity, cat) > config.NAME_THRESHOLD:
+                        for core_entity in self.config.CORE:
+                            if jellyfish.jaro_distance(core_entity, cat) > self.config.NAME_THRESHOLD:
                                 c_flag = True
                                 break
 
@@ -460,9 +461,9 @@ class Oracle:
 
                             if not result[1] or result[1][0] != 'is.numeric':
                                 for joinedEntry in joined:
-                                    if (joinedEntry in config.conjunctive and
-                                            config.conjunctive[joinedEntry][1] in featureHash):
-                                        stored = config.conjunctive[joinedEntry]
+                                    if (joinedEntry in self.config.conjunctive and
+                                            self.config.conjunctive[joinedEntry][1] in featureHash):
+                                        stored = self.config.conjunctive[joinedEntry]
                                         if not inserted:
                                             f_[featureHash[stored[1]]].append((tokens[0], result, stored[0]))
                                             inserted = True
@@ -478,13 +479,13 @@ class Oracle:
                                 prev_numeric.append(result[0])
 
                         elif numeric_token is not None:
-                            if val[0] in config.conjunctive and config.conjunctive[val[0]][1] in featureHash:
-                                stored = config.conjunctive[val[0]]
+                            if val[0] in self.config.conjunctive and self.config.conjunctive[val[0]][1] in featureHash:
+                                stored = self.config.conjunctive[val[0]]
                                 f_[featureHash[stored[1]]].append((tokens[0], (relevant, val), stored[0]))
                                 featureHash[val[0]] = featureHash[stored[1]]
-                            elif numeric_token in config.conjunctive and config.conjunctive[numeric_token][
+                            elif numeric_token in self.config.conjunctive and self.config.conjunctive[numeric_token][
                                 1] in featureHash:
-                                stored = config.conjunctive[numeric_token]
+                                stored = self.config.conjunctive[numeric_token]
                                 f_[featureHash[stored[1]]].append((tokens[0], (relevant, val), stored[0]))
                                 featureHash[numeric_token] = featureHash[stored[1]]
                             else:
@@ -517,7 +518,7 @@ class Oracle:
             'after': lambda D: self.after_helper_(c_key),
             'before': lambda D: self.before_helper_(c_key),
             'against': lambda D: self.compare_helper_(c_key)
-        }[f_key](config.filtered)
+        }[f_key](self.config.filtered)
 
         return result;
 
@@ -537,10 +538,10 @@ class Oracle:
 
         print('\nfeature association: most relevant feature for arg (', args, ') is ' + relevant)
 
-        if relevant in config.name_ids and args in config.IDENTIFIERS[relevant]:
+        if relevant in self.config.name_ids and args in self.config.IDENTIFIERS[relevant]:
             return (relevant, [args])
 
-        if 'is.numeric' in list(config.DOMAIN_KNOWLEDGE[relevant].values())[0]:
+        if 'is.numeric' in list(self.config.DOMAIN_KNOWLEDGE[relevant].values())[0]:
             if not self.is_number(args):
                 test_split = re.split(pat, args)
                 criteria = self.generate_filter_helper_(relevant, test_split)
@@ -548,8 +549,8 @@ class Oracle:
             else:
                 return (relevant, ['is.numeric'])
 
-        featureDist = [config.FEATURE_DIST[feat] for feat in config.FEATURE_DIST
-                       if jellyfish.jaro_distance(args, feat) > config.CONF_THRESHOLD]
+        featureDist = [self.config.FEATURE_DIST[feat] for feat in self.config.FEATURE_DIST
+                       if jellyfish.jaro_distance(args, feat) > self.config.CONF_THRESHOLD]
         if featureDist:
             return (featureDist[0], [])
 
@@ -564,7 +565,7 @@ class Oracle:
 
         for term in c_list:
 
-            if config.is_conj(term.lower()):
+            if self.config.is_conj(term.lower()):
                 conj = term
             else:
                 lookup = re.match('(.+)', term).group()  # extract token
@@ -626,12 +627,12 @@ class Oracle:
                 if exec_str:
                     exec_str += ' | '
                 if '!' in f_tok:  # negation logic
-                    exec_str += "(config.filtered[\'" + feature + "\'] != \'" + f_[1] + "\')"
+                    exec_str += "(self.config.filtered[\'" + feature + "\'] != \'" + f_[1] + "\')"
                     continue
-                exec_str += "(config.filtered[\'" + feature + "\'] == \'" + f_[0] + "\')"
+                exec_str += "(self.config.filtered[\'" + feature + "\'] == \'" + f_[0] + "\')"
 
                 for i in range(1, len(f_)):
-                    exec_str += " | (config.filtered[\'" + feature + "\'] == \'" + f_[i] + "\')"  # handle union logic
+                    exec_str += " | (self.config.filtered[\'" + feature + "\'] == \'" + f_[i] + "\')"  # handle union logic
 
         return exec_str
 
@@ -640,9 +641,9 @@ class Oracle:
         '''Filter database over distribution of a feature'''
 
         features = c_key[0]  # extract features
-        config.filtered = config.filtered.groupby(features)  # group by features
+        self.config.filtered = self.config.filtered.groupby(features)  # group by features
 
-        return config.filtered, features
+        return self.config.filtered, features
 
     def over_helper_(self, c_key):
 
@@ -650,7 +651,7 @@ class Oracle:
 
         feature = c_key[0]  # extract feature
         args = c_key[1]  # extract value to filter on
-        exec_str = "(config.filtered[\'" + feature + "\'] > " + args[0] + ")"
+        exec_str = "(self.config.filtered[\'" + feature + "\'] > " + args[0] + ")"
 
         return exec_str
 
@@ -660,7 +661,7 @@ class Oracle:
 
         feature = c_key[0]  # extract feature
         args = c_key[1]  # extract value to filter on
-        exec_str = "(config.filtered[\'" + feature + "\'] < " + args[0] + ")"
+        exec_str = "(self.config.filtered[\'" + feature + "\'] < " + args[0] + ")"
 
         return exec_str
 
@@ -671,8 +672,8 @@ class Oracle:
         feature = c_key[0]  # extract feature
         args = c_key[1]  # extract value to filter on
         left, right = args[0], args[1]
-        exec_str = "(config.filtered[\'" + feature + "\'] > " + left + ")" \
-                                                                       "& (config.filtered[\'" + feature + "\'] < " + right + ")"
+        exec_str = "(self.config.filtered[\'" + feature + "\'] > " + left + ")" \
+                                                                       "& (self.config.filtered[\'" + feature + "\'] < " + right + ")"
 
         return exec_str
 
@@ -682,7 +683,7 @@ class Oracle:
 
         feature = c_key[0]  # extract feature
         args = c_key[1]  # extract values to filter on
-        unique_vals = list(set(list(config.filtered[feature].unique())) - set([args]))
+        unique_vals = list(set(list(self.config.filtered[feature].unique())) - set([args]))
         unique_vals = [x for x in unique_vals if x == x]
         unique_vals = '+'.join(unique_vals)
 
@@ -694,8 +695,8 @@ class Oracle:
 
         feature = c_key[0]  # extract relevant feature
         args = c_key[1]  # extract values to filter on
-        left = str(float(args[0]) - 0.5 * config.filtered[feature].std())  # left bound -0.5 std
-        right = str(float(args[1]) + 0.5 * config.filtered[feature].std())  # right bound +0.5 std
+        left = str(float(args[0]) - 0.5 * self.config.filtered[feature].std())  # left bound -0.5 std
+        right = str(float(args[1]) + 0.5 * self.config.filtered[feature].std())  # right bound +0.5 std
 
         if left > right:
             left, right = right, left
@@ -762,35 +763,35 @@ class Oracle:
 
         '''Return relevant feature to filter on'''
 
-        featureDist = [config.FEATURE_DIST[feat] for feat in config.FEATURE_DIST
-                       if jellyfish.jaro_distance(args, feat) > config.CONF_THRESHOLD]
+        featureDist = [self.config.FEATURE_DIST[feat] for feat in self.config.FEATURE_DIST
+                       if jellyfish.jaro_distance(args, feat) > self.config.CONF_THRESHOLD]
         if featureDist:
             return featureDist[0]
 
         found_batter, found_pitcher = False, False
-        for identifier in config.IDENTIFIERS:
-            if args in config.IDENTIFIERS[identifier]:
-                if identifier == config.name_ids[0]:
+        for identifier in self.config.IDENTIFIERS:
+            if args in self.config.IDENTIFIERS[identifier]:
+                if identifier == self.config.name_ids[0]:
                     found_batter = True
                 else:
                     found_pitcher = True
 
         if not (found_batter and found_pitcher):
             if found_batter:
-                return (config.name_ids[0])
+                return (self.config.name_ids[0])
             elif found_pitcher:
-                return (config.name_ids[1])
+                return (self.config.name_ids[1])
         else:
-            return ((config.name_ids[0], [args])
-                    if len(config.X[config.X[config.name_ids[0]] == args]) > len(
-                config.X[config.X[config.name_ids[1]] == args])
-                    else (config.name_ids[1]))
+            return ((self.config.name_ids[0], [args])
+                    if len(self.config.X[self.config.X[self.config.name_ids[0]] == args]) > len(
+                self.config.X[self.config.X[self.config.name_ids[1]] == args])
+                    else (self.config.name_ids[1]))
 
         max_conf, max_feat = 0, ''
 
-        for entry in config.DOMAIN_KNOWLEDGE:  # iterate over terms in the system's domain knowledge
+        for entry in self.config.DOMAIN_KNOWLEDGE:  # iterate over terms in the system's domain knowledge
 
-            if args in config.DOMAIN_KNOWLEDGE[entry]:  # if term matches exactly return it
+            if args in self.config.DOMAIN_KNOWLEDGE[entry]:  # if term matches exactly return it
                 return entry
 
             tokens = args.split()  # otherwise split tokens and accumulate evidence of belonging to each feature
@@ -805,7 +806,7 @@ class Oracle:
                     skipped += 1
 
                     for desc in list(
-                            config.DOMAIN_KNOWLEDGE[entry].keys()):  # iterate over each term in domain knowledge
+                            self.config.DOMAIN_KNOWLEDGE[entry].keys()):  # iterate over each term in domain knowledge
 
                         # compute string similarity of query vs term in DOMAIN_KNOWLEDGE
                         curr = max(jellyfish.jaro_distance(desc, token), curr)  # string similarity by jaro_distance
@@ -817,7 +818,7 @@ class Oracle:
             if conf_f > max_conf:  # update max confidence level and associated feature
                 max_conf, max_feat = conf_f, entry
 
-        if max_conf > config.CONF_THRESHOLD:
+        if max_conf > self.config.CONF_THRESHOLD:
             return max_feat  # return result
         else:
             return None
@@ -828,10 +829,10 @@ class Oracle:
 
         print('(' + feature + ', ' + args + '): ' + 'match_arg_to_feature_value')
 
-        if feature in config.name_ids:
+        if feature in self.config.name_ids:
             return [args]
 
-        unique_vals = list(set(list(itertools.chain.from_iterable(config.DOMAIN_KNOWLEDGE[feature].values()))))
+        unique_vals = list(set(list(itertools.chain.from_iterable(self.config.DOMAIN_KNOWLEDGE[feature].values()))))
         vals = {key: 0 for key in unique_vals}  # initialize hash to accumulate evidence for each value of feature
         tokens = args.split()  # tokenize argument
         max_val, max_arg = 0, []
@@ -841,28 +842,28 @@ class Oracle:
             if self.is_number(token):
                 return [token]
 
-            for lookup in config.DOMAIN_KNOWLEDGE[feature]:  # lookup relevant modifiers in domain knowledge
+            for lookup in self.config.DOMAIN_KNOWLEDGE[feature]:  # lookup relevant modifiers in domain knowledge
 
                 jaro = jellyfish.jaro_distance(token, lookup)  # compute string similarity of modifier vs query token
 
                 # jaro normalized as a confidence between [0, 1]
-                if jaro > config.CONF_THRESHOLD:  # check if confidence is greater than preset threshold
+                if jaro > self.config.CONF_THRESHOLD:  # check if confidence is greater than preset threshold
 
                     # iterate over list of feature values that match the current modifier in domain knowledge
-                    for i in range(len(config.DOMAIN_KNOWLEDGE[feature][lookup])):
+                    for i in range(len(self.config.DOMAIN_KNOWLEDGE[feature][lookup])):
 
-                        vals[config.DOMAIN_KNOWLEDGE[feature][lookup][
+                        vals[self.config.DOMAIN_KNOWLEDGE[feature][lookup][
                             i]] += jaro  # accumulate evidence for lookup in hash
 
-                        if vals[config.DOMAIN_KNOWLEDGE[feature][lookup][i]] > max_val:
+                        if vals[self.config.DOMAIN_KNOWLEDGE[feature][lookup][i]] > max_val:
 
-                            max_val = vals[config.DOMAIN_KNOWLEDGE[feature][lookup][i]]  # update max confidence
-                            max_arg = [config.DOMAIN_KNOWLEDGE[feature][lookup][i]]  # update associated max argument
+                            max_val = vals[self.config.DOMAIN_KNOWLEDGE[feature][lookup][i]]  # update max confidence
+                            max_arg = [self.config.DOMAIN_KNOWLEDGE[feature][lookup][i]]  # update associated max argument
 
-                        elif vals[config.DOMAIN_KNOWLEDGE[feature][lookup][i]] == max_val:
+                        elif vals[self.config.DOMAIN_KNOWLEDGE[feature][lookup][i]] == max_val:
 
                             # accomodate for series of feature values that match the current modifier equally 
-                            max_arg.append(config.DOMAIN_KNOWLEDGE[feature][lookup][i])
+                            max_arg.append(self.config.DOMAIN_KNOWLEDGE[feature][lookup][i])
 
         return max_arg if max_arg else None
 
@@ -882,15 +883,15 @@ class Oracle:
         rterms, nrterms = [], []
 
         # represents (term, features) matrix where weight for each (term, feature) is dependent on cooccurence strength
-        cooccurence_hash = config.COOCCURENCE_HASH.copy()
+        cooccurence_hash = self.config.COOCCURENCE_HASH.copy()
 
-        for term, steps in config.EXP_DECAY.items():
-            cooccurence_hash[term][term] *= config.DECAY * (
-                    np.e ** (-config.DECAY * steps))  # update weights by exp decay
+        for term, steps in self.config.EXP_DECAY.items():
+            cooccurence_hash[term][term] *= self.config.DECAY * (
+                    np.e ** (-self.config.DECAY * steps))  # update weights by exp decay
 
         for feat, term_wgts in cooccurence_hash.items():  # iterate over feature, weight pairs in cooccurence hash
 
-            if feat in config.MOST_RECENT_QUERY:  # construct query vector on terms in most recent query
+            if feat in self.config.MOST_RECENT_QUERY:  # construct query vector on terms in most recent query
                 qry_vector[feat] += 1
                 rterms.append(term_wgts)
             else:
@@ -908,7 +909,7 @@ class Oracle:
         rterms.sort(key=lambda x: x[1])  # sort rterms before inserting into cache
 
         # only include features deemed relevant over a preset threshold
-        rterms = [term[0] for term in rterms if term[1] > config.RELEVANCE_FEEDBACK_THRESHOLD]
+        rterms = [term[0] for term in rterms if term[1] > self.config.RELEVANCE_FEEDBACK_THRESHOLD]
 
         return rterms
 
@@ -916,10 +917,10 @@ class Oracle:
 
         '''Return association rules from frequent itemsets analysis of relevant features to investigate'''
 
-        relim_input = itemmining.get_relim_input(config.ITEMSETS)
-        item_sets = itemmining.relim(relim_input, min_support=config.ASSOC_MIN_SUPPORT)  # generate frequent itemsets
-        rules = assocrules.mine_assoc_rules(item_sets, min_support=config.ASSOC_MIN_SUPPORT,
-                                            min_confidence=config.ASSOC_MIN_CONFIDENCE)  # generate association rules
+        relim_input = itemmining.get_relim_input(self.config.ITEMSETS)
+        item_sets = itemmining.relim(relim_input, min_support=self.config.ASSOC_MIN_SUPPORT)  # generate frequent itemsets
+        rules = assocrules.mine_assoc_rules(item_sets, min_support=self.config.ASSOC_MIN_SUPPORT,
+                                            min_confidence=self.config.ASSOC_MIN_CONFIDENCE)  # generate association rules
         rules.sort(key=lambda x: -1 * x[2] * x[3])  # sort rules before inserting into cache
 
         return rules
@@ -1017,15 +1018,15 @@ class Oracle:
 
         for token in tokens:
 
-            mkeys = config.module_hash.keys()
+            mkeys = self.config.module_hash.keys()
 
             for mkey in mkeys:
 
                 jaro = jellyfish.jaro_distance(token, mkey)
 
-                if jaro > config.MODULE_PARSING_THRESHOLD:
+                if jaro > self.config.MODULE_PARSING_THRESHOLD:
 
-                    matches = config.module_hash[mkey]
+                    matches = self.config.module_hash[mkey]
 
                     for match in matches:
                         candidates[match].add(mkey)
@@ -1034,7 +1035,7 @@ class Oracle:
         for module in candidates:
 
             mset = candidates[module]
-            keys = config.modules_reversed[module]
+            keys = self.config.modules_reversed[module]
 
             for key in keys:
                 combined = set()
@@ -1042,7 +1043,7 @@ class Oracle:
                 combined |= set(keyset)
                 combined &= mset
 
-                if len(combined) / len(keyset) > config.CONF_THRESHOLD:
+                if len(combined) / len(keyset) > self.config.CONF_THRESHOLD:
                     result.add(module)
 
         clookup = {k: v for k, v in clookup.items() if k in result}
@@ -1050,7 +1051,7 @@ class Oracle:
         return clookup
 
     def parse_query(self):
-        tokens = nltk.word_tokenize(config.qry)  # tokenize user query
+        tokens = nltk.word_tokenize(self.config.qry)  # tokenize user query
         pos_tag = nltk.pos_tag(tokens)  # apply part of speech tagger
         items = defaultdict(deque)
         for i, term in enumerate(pos_tag):
@@ -1066,19 +1067,19 @@ class Oracle:
 
             tag = list(tag)
 
-            if config.is_prep(tag[1]) or tag[0] in config.keywords:  # check if token is a preposition or a keyword
+            if self.config.is_prep(tag[1]) or tag[0] in self.config.keywords:  # check if token is a preposition or a keyword
 
                 actors.append(tag)
                 prev = False
 
-            elif config.is_genitive(tag) or config.is_verb(tag) or config.is_actor(tag[1]):
+            elif self.config.is_genitive(tag) or self.config.is_verb(tag) or self.config.is_actor(tag[1]):
 
-                if config.is_genitive(tag) or config.is_verb(
+                if self.config.is_genitive(tag) or self.config.is_verb(
                         tag):  # check if tagged element is a possessive modifier or a verb phrase
 
-                    if config.is_genitive(tag):
-                        tag[0] = config.GENITIVE  # reset query token to be the genitive placeholder '->'
-                    elif config.is_verb(tag):
+                    if self.config.is_genitive(tag):
+                        tag[0] = self.config.GENITIVE  # reset query token to be the genitive placeholder '->'
+                    elif self.config.is_verb(tag):
                         verbs.append(i)  # add to verbs list
 
                     actors.append(tag)  # add to actors list
@@ -1107,24 +1108,24 @@ class Oracle:
 
         for i in range(len(ind)):
 
-            if a_ind < len(actors) and v_ind < len(verbs) and config.is_verb(actors[a_ind]):
+            if a_ind < len(actors) and v_ind < len(verbs) and self.config.is_verb(actors[a_ind]):
 
                 index = verbs[v_ind] + 1
 
-                while index < len(pos_tag) and config.is_adv(pos_tag[index][1]):
+                while index < len(pos_tag) and self.config.is_adv(pos_tag[index][1]):
                     # group adverbs and verb phrases as a single entity
                     actors[a_ind][0] += ' ' + pos_tag[index][0]
                     index += 1
 
                 v_ind += 1
 
-            while a_ind < len(actors) and not config.is_actor(actors[a_ind][1]):
+            while a_ind < len(actors) and not self.config.is_actor(actors[a_ind][1]):
                 a_ind += 1
 
             index = items[actors[a_ind][0].split()[0]].popleft() - 1
 
             while ((a_ind < len(actors) and index >= 0)
-                   and config.is_desc(pos_tag[index][1])):
+                   and self.config.is_desc(pos_tag[index][1])):
                 # concatenate noun phrases with adjacent modifiers
                 actors[a_ind][0] = pos_tag[index][0] + ' ' + actors[a_ind][0]
                 index -= 1
@@ -1135,7 +1136,7 @@ class Oracle:
         for i, tag in enumerate(actors):
             if re.search(r'(?i)^NOT$', actors[i][0].lower()) is not None:
                 negated = True
-            if config.is_actor(tag[1]):
+            if self.config.is_actor(tag[1]):
                 if negated:
                     tag[0] = '(NOT{0})'.format(tag[0])
                 else:
@@ -1145,29 +1146,29 @@ class Oracle:
         # remove gerund and noun phrase modifers adjacent to the concatenated sets contructed above
         actors[:] = [actors[i] for i in range(len(actors)) if
                      (not ((i + 1) < len(actors) and
-                           (config.is_gerund(actors[i][1]) and
-                            config.is_actor(actors[i + 1][1]))) and
+                           (self.config.is_gerund(actors[i][1]) and
+                            self.config.is_actor(actors[i + 1][1]))) and
                       re.search(r'(?i)^NOT$', actors[i][0].lower()) is None)]
 
         return actors
 
     def update_conjunctive_lookup(self, actors):
-        config.conjunctive = {}
+        self.config.conjunctive = {}
         latest_actor, conj = None, None
         for i in range(len(actors)):
-            if config.is_actor(actors[i][1]):
+            if self.config.is_actor(actors[i][1]):
                 current = re.findall(r'\((.+?)\)', actors[i][0])[0]
-                if current not in config.CORE and current not in config.FEATURE_DIST:
+                if current not in self.config.CORE and current not in self.config.FEATURE_DIST:
                     if conj is not None:
                         previous = re.findall(r'\((.+?)\)', latest_actor)[0]
-                        if previous in config.conjunctive:
-                            previous = config.conjunctive[previous][1]
-                        config.conjunctive[current] = (conj, previous)
+                        if previous in self.config.conjunctive:
+                            previous = self.config.conjunctive[previous][1]
+                        self.config.conjunctive[current] = (conj, previous)
                         conj = None
                     latest_actor = actors[i][0]
-            elif config.is_conj(actors[i][0].lower()) and latest_actor is not None:
+            elif self.config.is_conj(actors[i][0].lower()) and latest_actor is not None:
                 # lookup relevant keyword
-                conj = config.keywords[actors[i][0].lower()]
+                conj = self.config.keywords[actors[i][0].lower()]
 
     def handle_query(self, actors):
 
@@ -1177,18 +1178,18 @@ class Oracle:
         extag = ''  # parsed result
         pos_index = 0  # holds current position to edit result at in the finite state transduction
         for i in range(len(actors)):
-            if not config.is_prep(actors[i][1]):
+            if not self.config.is_prep(actors[i][1]):
                 immediate_f = False
             elif immediate_f:
                 continue
             if start_f:
-                if config.is_prep(actors[i][1]):
+                if self.config.is_prep(actors[i][1]):
                     continue
                 else:
                     extag += actors[i][0].lower() + ')'
                     start_f = False
                     continue
-            elif not extag and config.is_prep(actors[i][1]):
+            elif not extag and self.config.is_prep(actors[i][1]):
                 reduction = self.filter_reduction(actors[i][0])
                 if reduction is not None:
                     extag += reduction + '('
@@ -1199,31 +1200,31 @@ class Oracle:
                     extag += '=>*(%filter%)(' + actors[i][0]
                     flag, prev_f = 1, True
                 continue
-            if config.is_verb(actors[i]):  # check if token is a verb phrase
-                op = config.keywords[actors[i][0]]  # lookup relevant keyword
+            if self.config.is_verb(actors[i]):  # check if token is a verb phrase
+                op = self.config.keywords[actors[i][0]]  # lookup relevant keyword
                 if not op:  # check if the token matches a preset token in keywords
                     op = '=>*(%' + actors[i][0].lower() + '%)'  # substitute op with user specified action
                 pos_index = len(extag)
                 extag += op + '('
                 open_v = True  # set current parsing of verb phrase to true
-            elif config.is_conj(actors[i][0].lower()):  # check if token is a conjunction
-                conj = config.keywords[actors[i][0].lower()]  # lookup relevant keyword
+            elif self.config.is_conj(actors[i][0].lower()):  # check if token is a conjunction
+                conj = self.config.keywords[actors[i][0].lower()]  # lookup relevant keyword
                 pos_index = len(extag)
                 continue
-            elif config.is_genitive(actors[i]):  # check if token is a genitive phrase
+            elif self.config.is_genitive(actors[i]):  # check if token is a genitive phrase
                 pos_index = len(extag)
                 extag += actors[i][0]
                 if prev_f:
                     continue
             # check if preposition non-keyword preposition followers an actor
-            elif config.is_actor(actors[i][1]) and prev_p:
+            elif self.config.is_actor(actors[i][1]) and prev_p:
                 extag = extag[:pos_index] + actors[i][0] + extag[pos_index:]  # switch order of actor and preposition
                 prev_p = False  # set current parsing of preposition to false
-            elif config.is_prep(actors[i][1]) or actors[i][
-                0].lower() in config.keywords:  # check if token is a verb phrase
+            elif self.config.is_prep(actors[i][1]) or actors[i][
+                0].lower() in self.config.keywords:  # check if token is a verb phrase
                 immediate_f = True
                 if conj is not None:
-                    conj_filter = config.keywords[actors[i][0].lower()]
+                    conj_filter = self.config.keywords[actors[i][0].lower()]
                     if not conj_filter:
                         conj_filter = '=>*(%' + actors[i][0].lower() + '%)'
                     continue
@@ -1231,11 +1232,11 @@ class Oracle:
                     extag += ')'  # close open verb tag
                     open_v = False
                 # substitute with keyword representation encoded in domain knowledge
-                op = config.keywords[actors[i][0].lower()]
+                op = self.config.keywords[actors[i][0].lower()]
                 if not op:
                     op = '=>*(%' + actors[i][
                         0].lower() + '%)'  # substitute with user-specified token if not in keywords
-                if op in config.filters:
+                if op in self.config.filters:
                     if flag == 1:
                         # concatenate keyword representation to extag
                         extag = extag[:pos_index] + op + '(' + extag[pos_index:]
@@ -1256,7 +1257,7 @@ class Oracle:
                     if prev_f:
                         extag += ')'
                         prev_f = False
-                    elif (i + 1) < len(actors) and config.is_actor(actors[i + 1][1]):
+                    elif (i + 1) < len(actors) and self.config.is_actor(actors[i + 1][1]):
                         extag += '=>*(%filter%)('  # update result to accommodate parsed actions that require a parameter
                         prev_f = True  # set parsing of filter to true
                     continue
@@ -1267,7 +1268,7 @@ class Oracle:
                             and extracted == latest_feat_for_arg):
                         extag += conj
                     else:
-                        if conj_filter is None or conj_filter == config.GENITIVE:
+                        if conj_filter is None or conj_filter == self.config.GENITIVE:
                             conj_filter = '=>*(%filter%)('
                             if flag != -1 or prev_f:
                                 conj_filter = ')' + conj_filter
@@ -1282,7 +1283,7 @@ class Oracle:
                     extag += ')'
                     pos_index = len(extag)
                     continue
-            if (i + 1) < len(actors) and config.is_conj(
+            if (i + 1) < len(actors) and self.config.is_conj(
                     actors[i + 1][0]):  # ignore conjunctions that were handled above
                 latest_feat_for_arg = re.findall(r'\((.+?)\)', actors[i][0])[0]
                 latest_feat_for_arg = self.match_(latest_feat_for_arg)
@@ -1291,23 +1292,23 @@ class Oracle:
             if prev_f:  # check if modifiying a filtering substitution
                 pos_index = len(extag)
                 if ((i + 1) < len(actors) and
-                        (config.is_genitive(actors[i + 1]) or config.is_actor(actors[i + 1][1]))):
-                    if config.is_actor(actors[i + 1][1]):
+                        (self.config.is_genitive(actors[i + 1]) or self.config.is_actor(actors[i + 1][1]))):
+                    if self.config.is_actor(actors[i + 1][1]):
                         extag += ')=>*(%filter%)('  # accommodate action that requires a parameter
                     continue
                 extag += ')'
             prev_f = False
         if open_v or prev_f:
             extag += ')'
-        for s in config.subs:  # substitute tokens in the parsed result that match tokens in subs
-            extag = extag.replace(s, config.subs[s])
+        for s in self.config.subs:  # substitute tokens in the parsed result that match tokens in subs
+            extag = extag.replace(s, self.config.subs[s])
 
         return extag
 
     def generate_parse_lists(self, extag):
 
         f_list, e_list = [], []  # initialize filters, entities lists
-        f_keys = [re.findall(r'\(%(.+?)%\)', f_key)[0] for f_key in config.filters]  # extract only content
+        f_keys = [re.findall(r'\(%(.+?)%\)', f_key)[0] for f_key in self.config.filters]  # extract only content
         f_keys = '(?:' + '|'.join(f_keys) + ')'
         # pattern match against any filter in domain knowledge
         pat = r'=>\*\(' + '%' + f_keys + '%' + r'\)\(\(.+?\)\)\)?'
@@ -1348,9 +1349,9 @@ class Oracle:
         @return: None otherwise (sample size of 0 on query)
         '''
 
-        settings.CONFIG.qry = qry
-        settings.CONFIG.clookup = self.parse_modules(settings.CONFIG.qry)
-        print('\nparsed modules: ' + str(settings.CONFIG.clookup.keys()))
+        self.config.qry = qry
+        self.config.clookup = self.parse_modules(self.config.qry)
+        print('\nparsed modules: ' + str(self.config.clookup.keys()))
         # preprocessing
         pos_tag, items = self.parse_query()
         actors, ind, verbs = self.extract_entities(pos_tag)
@@ -1362,7 +1363,7 @@ class Oracle:
         # generate parsed filter and entity lists
         f_list, e_list = self.generate_parse_lists(extag)
         # apply sequential filter
-        settings.CONFIG.filtered, b_feat = self.sequential_filter(f_list)
+        self.config.filtered, b_feat = self.sequential_filter(f_list)
         # apply sequential entity filter
         # store results of query processing and generated visualization
         result, sample_size, plot, rterms = self.sequential_entity(e_list, b_feat, actors)

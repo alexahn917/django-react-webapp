@@ -68,8 +68,9 @@ class Query extends React.Component {
                         var stack = this.state.stack.slice();
                         stack.unshift({
                             'query': this.state.query,
-                            "data": JSON.parse(data.data),
+                            'data': JSON.parse(data.data),
                             'type': data.type,
+                            'headline': data.headline,
                         });
                         this.setState({stack});
                     });
@@ -79,7 +80,7 @@ class Query extends React.Component {
 
     getAnswerCards = () => {
         return (
-            this.state.stack.map((ans, idx) => <Records key={idx} query={ans.query} data={ans.data}/>)
+            this.state.stack.map((ans, idx) => <Records key={idx} query={ans.query} data={ans.data} headline={ans.headline}/>)
         )
     };
 

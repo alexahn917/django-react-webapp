@@ -33,13 +33,11 @@ class Query(APIView):
                           columns=['stats 1', 'stats 2', 'stats 3', 'stats 4', 'stats 5'])
 
         result, sample_size, plot, rterms = settings.ORACLE.run(request.data['query'])
-        print(result)
 
         response = {
             'type': 'records',
-            'data': df.to_json(orient='records')
+            'data': result.to_json(orient='records'), # df.to_json(orient='records')
+            'headline': 'Investigate Features More Like This: {}'.format(', '.join(rterms))
         }
-
-
 
         return Response(json.dumps(response))

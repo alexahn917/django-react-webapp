@@ -50,7 +50,7 @@ class Records extends React.Component {
                         <Typography
                             className={classes.title}>Q: {this.props.query}</Typography>
                         <Typography variant="headline" component="h2">
-                            {'Populating randomly generated data...'}
+                            {'Response'}
                         </Typography>
                         <Typography className={classes.pos}>
                             {this.props.headline}
