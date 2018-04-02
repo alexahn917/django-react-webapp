@@ -23,6 +23,8 @@ from oracle.modules.leadrunnerfirst import LeadRunnerOnFirst
 from oracle.recommendations.recommendation import Recommendation, RecommendationItem
 from oracle.dknowledge import Config
 
+from django.conf import settings
+
 
 class Oracle:
 
@@ -1346,9 +1348,9 @@ class Oracle:
         @return: None otherwise (sample size of 0 on query)
         '''
 
-        config.qry = qry
-        config.clookup = self.parse_modules(config.qry)
-        print('\nparsed modules: ' + str(config.clookup.keys()))
+        settings.CONFIG.qry = qry
+        settings.CONFIG.clookup = self.parse_modules(settings.CONFIG.qry)
+        print('\nparsed modules: ' + str(settings.CONFIG.clookup.keys()))
         # preprocessing
         pos_tag, items = self.parse_query()
         actors, ind, verbs = self.extract_entities(pos_tag)
@@ -1360,7 +1362,7 @@ class Oracle:
         # generate parsed filter and entity lists
         f_list, e_list = self.generate_parse_lists(extag)
         # apply sequential filter
-        config.filtered, b_feat = self.sequential_filter(f_list)
+        settings.CONFIG.filtered, b_feat = self.sequential_filter(f_list)
         # apply sequential entity filter
         # store results of query processing and generated visualization
         result, sample_size, plot, rterms = self.sequential_entity(e_list, b_feat, actors)

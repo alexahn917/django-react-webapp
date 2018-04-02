@@ -18,7 +18,6 @@ from oracle.oracle import Oracle
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -79,7 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
@@ -89,7 +87,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -109,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
@@ -122,7 +118,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
@@ -140,6 +135,6 @@ except ImportError:
 username = ''
 api_key = ''
 
-# desc_filename = os.path.join(os.getcwd(), 'dataset/sample_query.csv')
-# CONFIG = Config(username, api_key, desc_filename) # construct Config object with customizable domain knowledge
-# ORACLE = Oracle(CONFIG)
+desc_filename = os.path.join(os.getcwd(), 'dataset/sample_query.csv')
+CONFIG = Config(username, api_key, desc_filename)  # construct Config object with customizable domain knowledge
+ORACLE = Oracle(CONFIG)
