@@ -37,7 +37,8 @@ class Query(APIView):
         response = {
             'type': 'records',
             'data': result.to_json(orient='records'), # df.to_json(orient='records')
-            'headline': 'Investigate Features More Like This: {}'.format(', '.join(rterms))
+            'headline': 'Investigate Features More Like This: {}'.format(', '.join(rterms)),
+            'plot': plot
         }
 
         return Response(json.dumps(response))

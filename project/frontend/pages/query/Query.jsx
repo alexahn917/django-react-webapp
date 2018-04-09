@@ -37,9 +37,6 @@ class Query extends React.Component {
         this.state = {
             query: '',
             stack: [],
-                // 'query': 'What is the avg ERA for Clayton Kershaw?',
-                // 'data': 'Chart'
-            // ],
         }
     }
 
@@ -69,6 +66,7 @@ class Query extends React.Component {
                         stack.unshift({
                             'query': this.state.query,
                             'data': JSON.parse(data.data),
+                            'plot': data.plot,
                             'type': data.type,
                             'headline': data.headline,
                         });
@@ -80,7 +78,7 @@ class Query extends React.Component {
 
     getAnswerCards = () => {
         return (
-            this.state.stack.map((ans, idx) => <Records key={idx} query={ans.query} data={ans.data} headline={ans.headline}/>)
+            this.state.stack.map((ans, idx) => <Records key={idx} query={ans.query} data={ans.data} headline={ans.headline} plot={ans.plot}/>)
         )
     };
 

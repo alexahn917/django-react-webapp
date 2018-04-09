@@ -4,9 +4,10 @@ import {withStyles} from 'material-ui/styles';
 import Card, {CardActions, CardContent} from 'material-ui/Card';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
-import {ListItem} from "material-ui";
+import {ListItem, Paper} from "material-ui";
 import QueryResultTable from "../../components/QueryResultTable";
 import RecordTable from "./RecordTable";
+import {HorizontalGridLines, MarkSeries, XAxis, XYPlot, YAxis} from "react-vis";
 
 const styles = theme => ({
     searchBar: {
@@ -28,6 +29,12 @@ const styles = theme => ({
         color: theme.palette.text.secondary,
     },
     action: {
+        display: 'flex',
+    },
+    paper: {
+        margin: theme.spacing.unit * 3,
+        padding: theme.spacing.unit * 3,
+        color: theme.palette.text.secondary,
         display: 'flex',
     },
 });
@@ -57,6 +64,18 @@ class Records extends React.Component {
                         </Typography>
                         <RecordTable data={this.props.data}/>
                     </CardContent>
+                    <Paper className={classes.paper}>
+                        <Typography className={classes.title}>Scatter Plot</Typography>
+                        <XYPlot height={200} width={350}>
+                            <HorizontalGridLines/>
+                            <MarkSeries
+                                data={this.props.plot}
+                                stroke="white"
+                                onNearestXY={this._onNearestX}/>
+                            <XAxis/>
+                            <YAxis/>
+                        </XYPlot>
+                    </Paper>
                     <CardActions>
                         <Button size="small" className={classes.action}>Download
                             CSV</Button>

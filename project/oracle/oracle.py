@@ -80,6 +80,12 @@ class Oracle:
     def print_module_delegation(self, keyword, module):
         print("delegating computation of '" + keyword + "' to module " + str(module))
 
+    def react_conversion(self, x, y):
+        result = []
+        for i in range(len(x)):
+            result.append({'x': x[i], 'y': y[i]})
+        return result
+
     def match_expr(self, entity, b_list, title, e_filters):
 
         '''driver for filtering on pre-built functions'''
@@ -113,7 +119,9 @@ class Oracle:
                             dist_plot = False
 
             if plot_l and dist_plot:  # if calculated results are returned, generate the plot
-                plot = self.automate_plot_by_(names, plot_l, entity, title, 'bar')
+                plot = self.react_conversion(names, plot_l)
+                # plot = pd.DataFrame({'x': names, 'y': plot_l})
+                # plot = self.automate_plot_by_(names, plot_l, entity, title, 'bar')
                 status = False  # set time_series plot status to False
 
         else:  # otherwise plot time series by default
@@ -137,8 +145,10 @@ class Oracle:
 
                 if plot_l:
                     # plot time series chart
+                    names = [str(name) for names in names]
+                    plot = self.react_conversion(names, plot_l)
+                    # plot = pd.DataFrame({'x': names, 'y': plot_l})
                     # plot = self.automate_plot_by_(names, plot_l, entity, title, 'scatter')
-                    plot = None
 
         return result, plot, status
 
@@ -687,7 +697,7 @@ class Oracle:
         unique_vals = [x for x in unique_vals if x == x]
         unique_vals = '+'.join(unique_vals)
 
-        return filter_helper_([feature, unique_vals], None)
+        return self.filter_helper_([feature, unique_vals], None)
 
     def near_helper_(self, c_key):
 
@@ -701,7 +711,7 @@ class Oracle:
         if left > right:
             left, right = right, left
 
-        return between_helper_([feature, [left, right]])
+        return self.between_helper_([feature, [left, right]])
 
     def automate_plot_by_(self, x, y, entity, title, chart_type):
 
@@ -862,7 +872,7 @@ class Oracle:
 
                         elif vals[self.config.DOMAIN_KNOWLEDGE[feature][lookup][i]] == max_val:
 
-                            # accomodate for series of feature values that match the current modifier equally 
+                            # accomodate for series of feature values that match the current modifier equally
                             max_arg.append(self.config.DOMAIN_KNOWLEDGE[feature][lookup][i])
 
         return max_arg if max_arg else None
@@ -870,11 +880,9 @@ class Oracle:
     def generate_features_rf_(self):
 
         '''Generate Bag-of-words of Relevant Features on Most Recent Query
-
         Current implementation supports suggestion of relevant features by relevance feedback (Rochio algorithm)
         Current implementation also supports suggestion of relevant features by frequent itemsets
         Defaulted to implementation of relevance feedback, with results cached for future reference
-
         Oracle caches features fetched over time and recalculates their weights in the cooccurence hash by
         time since last hit using an exponential decay
         '''
@@ -887,7 +895,7 @@ class Oracle:
 
         for term, steps in self.config.EXP_DECAY.items():
             cooccurence_hash[term][term] *= self.config.DECAY * (
-                    np.e ** (-self.config.DECAY * steps))  # update weights by exp decay
+                        np.e ** (-self.config.DECAY * steps))  # update weights by exp decay
 
         for feat, term_wgts in cooccurence_hash.items():  # iterate over feature, weight pairs in cooccurence hash
 
@@ -928,7 +936,6 @@ class Oracle:
     def rochio_algo(self, qry_vector, rel_terms, nonrel_terms, a, B, y):
 
         '''Relevance Feedback by Rochio Algorithm for Automated Query Suggestion
-
         Extension of original algorithm by caching results for future reference
         '''
 
@@ -1341,7 +1348,6 @@ class Oracle:
     def run(self, qry):
 
         '''Oracle's main driver
-
         Instantiate an instance of this class and call this method on
         a query to generate the Oracle's textual results and visualizations
         @return: result (data frame), sample sizes (data frame),
