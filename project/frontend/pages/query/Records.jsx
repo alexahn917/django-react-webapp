@@ -8,6 +8,7 @@ import {ListItem, Paper} from "material-ui";
 import QueryResultTable from "../../components/QueryResultTable";
 import RecordTable from "./RecordTable";
 import {HorizontalGridLines, MarkSeries, XAxis, XYPlot, YAxis} from "react-vis";
+import ScatterPlot from "../../components/graphs/ScatterPlot";
 
 const styles = theme => ({
     searchBar: {
@@ -37,6 +38,14 @@ const styles = theme => ({
         color: theme.palette.text.secondary,
         display: 'flex',
     },
+    verticalContainer: {
+        display: '-webkit-flex',
+        display: 'flex',
+        webkitAlignItems: 'center',
+        alignItems: 'center',
+        webkitJustifyContent: 'center',
+        justifyContent: 'center',
+    }
 });
 
 class Records extends React.Component {
@@ -64,18 +73,11 @@ class Records extends React.Component {
                         </Typography>
                         <RecordTable data={this.props.data}/>
                     </CardContent>
-                    <Paper className={classes.paper}>
-                        <Typography className={classes.title}>Scatter Plot</Typography>
-                        <XYPlot height={200} width={350}>
-                            <HorizontalGridLines/>
-                            <MarkSeries
-                                data={this.props.plot}
-                                stroke="white"
-                                onNearestXY={this._onNearestX}/>
-                            <XAxis/>
-                            <YAxis/>
-                        </XYPlot>
-                    </Paper>
+                    <div className={classes.verticalContainer}>
+                        <ScatterPlot data={this.props.plot.map((data) => {
+                            return ({x: new Date(data.x), y: data.y});
+                        })}/>
+                    </div>
                     <CardActions>
                         <Button size="small" className={classes.action}>Download
                             CSV</Button>
