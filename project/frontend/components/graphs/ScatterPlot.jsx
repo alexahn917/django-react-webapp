@@ -12,7 +12,7 @@ const styles = theme => ({
         textAlign: 'center',
     },
     paper: {
-        padding: theme.spacing.unit * 3,
+        padding: theme.spacing.unit * 5,
         textAlign: 'center',
         color: theme.palette.text.secondary,
         display: 'inline-block',
@@ -43,7 +43,7 @@ class ScatterPlot extends React.Component {
         return (
             <Paper className={classes.paper}>
                 <Typography className={classes.title}>Scatter Plot</Typography>
-                <XYPlot height={200} width={350} xType="time">
+                <XYPlot height={450} width={700} xType="time">
                     <HorizontalGridLines/>
                     <MarkSeries
                         data={data}
