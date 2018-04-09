@@ -62,7 +62,7 @@ class MainAppBar extends React.Component {
             </IconButton>
             <Typography variant="title" color="inherit" noWrap
                         className={classes.flex}>
-              App Bar Title
+              Project Oracle
             </Typography>
             <Button color="inherit">Login</Button>
           </Toolbar>
