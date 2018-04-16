@@ -38,7 +38,8 @@
     "react-router-dom": "^4.2.2",
     "react-vis": "^1.8.3",
     "redux": "^3.3.1",
-    "redux-thunk": "^1.0.3"
+    "redux-thunk": "^1.0.3",
+    "victory": "^0.25.7"
   },
   "scripts": {
     "watch": "node server.js"

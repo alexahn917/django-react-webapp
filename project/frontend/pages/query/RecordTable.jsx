@@ -17,34 +17,6 @@ const styles = theme => ({
     table: {},
 });
 
-let id = 0;
-
-function createData(season, ip, h, r, er, hr, bb, so, w, l, pgs, whip, baa,
-                    era) {
-    id += 1;
-    return {id, season, ip, h, r, er, hr, bb, so, w, l, pgs, whip, baa, era}
-}
-
-const data = [
-    createData('2017 Regular Season', 2.31, 175.0, 136, 49, 45, 23, 30, 202, 18,
-        4, 93.4, 0.95, .212),
-    createData('2017 Postseason', 3.82, 33.0, 21, 14, 14, 8, 10, 33, 3, 0, 90.6,
-        0.94, .179),
-    createData('Career', 2.36, 1935.0, 1431, 554, 508, 128, 507, 2120, 144, 64,
-        101.0, 1.00, .206),
-];
-
-
-// [{"a":8,"b":8},{"a":3,"b":3}]
-function update(props) {
-    console.log(props.data);
-    this.setState({
-        keys: Object.keys(props.data[0]),
-        rows: props.data,
-    });
-};
-
-
 class RecordTable extends React.Component {
     constructor() {
         super();
@@ -85,7 +57,7 @@ class RecordTable extends React.Component {
     render() {
         const {classes, data} = this.props;
         if (!data) {
-            return <div></div>
+            return null
         }
 
         return (

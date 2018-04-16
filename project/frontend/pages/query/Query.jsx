@@ -4,7 +4,7 @@ import {withStyles} from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
 import Grid from 'material-ui/Grid';
 import {List} from "material-ui";
-import AnswerCard from "./AnswerCard";
+import AnswerCard from "../../components/AnswerCard";
 import Records from "./Records";
 
 const styles = theme => ({

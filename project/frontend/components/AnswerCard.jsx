@@ -5,7 +5,7 @@ import Card, {CardActions, CardContent} from 'material-ui/Card';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import {ListItem} from "material-ui";
-import QueryResultTable from "../../components/QueryResultTable";
+import QueryResultTable from "./QueryResultTable";
 
 const styles = theme => ({
   searchBar: {

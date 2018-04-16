@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Crosshair,
+  Crosshair, FlexibleXYPlot,
   HorizontalGridLines,
   LineSeries,
   VerticalGridLines,
@@ -74,7 +74,7 @@ class LineChart extends React.Component {
     return (
         <Paper className={classes.paper}>
           <Typography className={classes.title}>Line Chart</Typography>
-          <XYPlot
+          <FlexibleXYPlot
               onMouseLeave={this._onMouseLeave}
               width={300}
               height={300}>
@@ -88,7 +88,7 @@ class LineChart extends React.Component {
             <LineSeries
                 data={data[1]}/>
             <Crosshair values={this.state.crosshairValues} className={'line-chart'}/>
-          </XYPlot>
+          </FlexibleXYPlot>
         </Paper>
     );
   }
