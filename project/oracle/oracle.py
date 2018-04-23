@@ -80,11 +80,16 @@ class Oracle:
     def print_module_delegation(self, keyword, module):
         print("delegating computation of '" + keyword + "' to module " + str(module))
 
-    def react_conversion(self, x, y):
-        result = []
-        for i in range(len(x)):
-            result.append({'x': x[i], 'y': y[i]})
-        return result
+
+    def react_conversion(self, plot_type, x, y):
+        data = {}
+        xs, ys = ['data1'], ['data2']
+        xs.extend(x)
+        ys.extend(y)
+        data['type'] = plot_type
+        result = [xs,ys]
+        data['columns'] = result
+        return data
 
     def match_expr(self, entity, b_list, title, e_filters):
 
@@ -119,7 +124,7 @@ class Oracle:
                             dist_plot = False
 
             if plot_l and dist_plot:  # if calculated results are returned, generate the plot
-                plot = self.react_conversion(names, plot_l)
+                plot = self.react_conversion('bar', names, plot_l)
                 # plot = pd.DataFrame({'x': names, 'y': plot_l})
                 # plot = self.automate_plot_by_(names, plot_l, entity, title, 'bar')
                 status = False  # set time_series plot status to False
@@ -146,7 +151,7 @@ class Oracle:
                 if plot_l:
                     # plot time series chart
                     names = [str(name) for name in names]
-                    plot = self.react_conversion(names, plot_l)
+                    plot = self.react_conversion('line', names, plot_l)
                     # plot = pd.DataFrame({'x': names, 'y': plot_l})
                     # plot = self.automate_plot_by_(names, plot_l, entity, title, 'scatter')
 
