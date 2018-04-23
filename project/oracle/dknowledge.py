@@ -78,7 +78,7 @@ class Config:
         self.clookup = defaultdict(set)
 
         self.CONF_THRESHOLD = 0.9  # confidence that a token must match an entry in DOMAIN_KNOWLEDGE before fetching that feature directly
-        self.MODULE_PARSING_THRESHOLD = 0.95  # confidence that token matches module in query apriori
+        self.MODULE_PARSING_THRESHOLD = 0.85  # confidence that token matches module in query apriori
         self.NAME_THRESHOLD = 0.9  # confidence that a token must match an entry in IDENTIFIERS before being labeled an player id
         self.RELEVANCE_FEEDBACK_THRESHOLD = 0.5  # threshold normalized on [0, 1] to label if a feature is relevant after relevance feedback
         self.ASSOC_MIN_SUPPORT = 2  # frequent itemsets support threshold

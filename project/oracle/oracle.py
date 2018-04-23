@@ -1021,7 +1021,7 @@ class Oracle:
             return reduction[f]
 
     def parse_modules(self, qry):
-
+    
         stopwords = set(nltk.corpus.stopwords.words('english'))
         tokens = nltk.word_tokenize(qry)
         candidates = defaultdict(set)
@@ -1030,15 +1030,15 @@ class Oracle:
 
         for token in tokens:
 
-            mkeys = self.config.module_hash.keys()
+            mkeys = config.module_hash.keys()
 
             for mkey in mkeys:
 
                 jaro = jellyfish.jaro_distance(token, mkey)
 
-                if jaro > self.config.MODULE_PARSING_THRESHOLD:
+                if jaro > config.MODULE_PARSING_THRESHOLD:
 
-                    matches = self.config.module_hash[mkey]
+                    matches = config.module_hash[mkey]
 
                     for match in matches:
                         candidates[match].add(mkey)
@@ -1047,7 +1047,7 @@ class Oracle:
         for module in candidates:
 
             mset = candidates[module]
-            keys = self.config.modules_reversed[module]
+            keys = config.modules_reversed[module]
 
             for key in keys:
                 combined = set()
@@ -1055,10 +1055,10 @@ class Oracle:
                 combined |= set(keyset)
                 combined &= mset
 
-                if len(combined) / len(keyset) > self.config.CONF_THRESHOLD:
+                if len(combined)/len(keyset) > config.CONF_THRESHOLD:
                     result.add(module)
 
-        clookup = {k: v for k, v in clookup.items() if k in result}
+        clookup  = {k: v for k, v in clookup.items() if k in result}
 
         return clookup
 
