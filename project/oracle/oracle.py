@@ -1,13 +1,14 @@
 import os
 import random
 import numpy as np
-from scipy import stats
 import pandas as pd
+import datetime as dt
 import nltk
-from collections import defaultdict, deque
 import re
 import itertools
 import jellyfish
+from scipy import stats
+from collections import defaultdict, deque
 import plotly
 import plotly.plotly as py
 import plotly.figure_factory as ff
@@ -81,13 +82,17 @@ class Oracle:
         print("delegating computation of '" + keyword + "' to module " + str(module))
 
 
-    def react_conversion(self, plot_type, x, y):
+    def billboardjs_conversion(self, plot_type, x, y, is_timeseries):
         data = {}
-        xs, ys = ['data1'], ['data2']
+        if is_timeseries:
+          xs, ys = ['x'], ['data']
+          data['x'] = 'x'
+        else:
+          xs, ys = ['data1'], ['data2']
         xs.extend(x)
         ys.extend(y)
-        data['type'] = plot_type
         result = [xs,ys]
+        data['type'] = plot_type
         data['columns'] = result
         return data
 
@@ -124,7 +129,7 @@ class Oracle:
                             dist_plot = False
 
             if plot_l and dist_plot:  # if calculated results are returned, generate the plot
-                plot = self.react_conversion('bar', names, plot_l)
+                plot = self.billboardjs_conversion('bar', names, plot_l, False)
                 # plot = pd.DataFrame({'x': names, 'y': plot_l})
                 # plot = self.automate_plot_by_(names, plot_l, entity, title, 'bar')
                 status = False  # set time_series plot status to False
@@ -150,8 +155,8 @@ class Oracle:
 
                 if plot_l:
                     # plot time series chart
-                    names = [str(name) for name in names]
-                    plot = self.react_conversion('line', names, plot_l)
+                    names = [name.strftime('%Y-%m-%d') for name in names]
+                    plot = self.billboardjs_conversion('line', names, plot_l, True)
                     # plot = pd.DataFrame({'x': names, 'y': plot_l})
                     # plot = self.automate_plot_by_(names, plot_l, entity, title, 'scatter')
 

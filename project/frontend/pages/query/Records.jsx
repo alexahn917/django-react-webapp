@@ -5,10 +5,7 @@ import Card, {CardActions, CardContent} from 'material-ui/Card';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import {ListItem} from "material-ui";
-import RecordTable from "./RecordTable";
-import LineChart from "./charts/LineChart";
-import ScatterPlot from "./charts/ScatterPlot";
-import InterpolationChart from "./charts/InterpolationChart";
+import BillboardChart from "react-billboardjs";
 
 const styles = theme => ({
   searchBar: {
@@ -54,6 +51,29 @@ const styles = theme => ({
   }
 });
 
+const timeserisAxis = {
+  "x": {
+    "type": "timeseries",
+    "tick": {
+      format: function (d) {
+        let month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+        if (month.length < 2) {
+          month = '0' + month;
+        }
+        if (day.length < 2) {
+          day = '0' + day;
+        }
+        return [year, month, day].join('-');
+      },
+      "count": 6
+    },
+  }
+};
+
+const fileDownload = require('js-file-download');
+
 class Records extends React.Component {
   constructor() {
     super();
@@ -61,10 +81,11 @@ class Records extends React.Component {
   }
 
   render() {
-    const {classes, theme} = this.props;
-    if (!this.props.data) {
+    const {classes, theme, data, plot} = this.props;
+    if (!data) {
       return <div>{''}</div>
     }
+    console.log(plot);
     return (
         <ListItem>
           <Card className={classes.card} elevation={4}>
@@ -77,19 +98,14 @@ class Records extends React.Component {
               <Typography className={classes.pos}>
                 {this.props.headline}
               </Typography>
-              <RecordTable data={this.props.data}/>
-              <LineChart data={this.props.plot.map((data) => {
-                return ({x: new Date(data.x), y: data.y});
-              })}/>
-              <ScatterPlot data={this.props.plot.map((data) => {
-                return ({x: new Date(data.x), y: data.y});
-              })}/>
-              <InterpolationChart data={this.props.plot.map((data) => {
-                return ({x: new Date(data.x), y: data.y});
-              })}/>
+              <BillboardChart data={plot} axis={timeserisAxis}/>
             </CardContent>
             <CardActions>
-              <Button size="small" className={classes.action}>Download
+              <Button size="small"
+                      className={classes.action}
+                      onClick={() => fileDownload(JSON.stringify(this.props.data), 'data.csv')}
+              >
+                Download
                 CSV</Button>
             </CardActions>
           </Card>

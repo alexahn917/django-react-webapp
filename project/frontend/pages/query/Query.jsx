@@ -95,6 +95,7 @@ class Query extends React.Component {
                         margin="normal"
                         onChange={this._onQueryChange}
                         onKeyPress={this._onKeyPress}
+                        value={"what is the strike rate of ranger pitchers on fastballs or curveballs against lefty batters on pitches with the start velocity over 90 in the eighth inning"}
                     />
                     <List>
                         {this.state.stack.length === 0 ? '' : this.getAnswerCards()}

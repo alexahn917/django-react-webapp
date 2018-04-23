@@ -6,6 +6,7 @@ import {createMuiTheme} from 'material-ui/styles';
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import Main from "./pages/Main";
 import "./styles/main.scss"
+import "react-billboardjs/lib/billboard.css";
 
 const theme = createMuiTheme({
   palette: {
