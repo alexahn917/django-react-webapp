@@ -6,6 +6,7 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import {ListItem} from "material-ui";
 import BillboardChart from "react-billboardjs";
+import RecordTable from "./RecordTable";
 
 const styles = theme => ({
   searchBar: {
@@ -85,6 +86,7 @@ class Records extends React.Component {
     if (!data) {
       return <div>{''}</div>
     }
+    console.log("Records");
     console.log(plot);
     return (
         <ListItem>
@@ -98,12 +100,16 @@ class Records extends React.Component {
               <Typography className={classes.pos}>
                 {this.props.headline}
               </Typography>
-              <BillboardChart data={plot} axis={timeserisAxis}/>
+              <RecordTable data={data}/>
+              <div style={{paddingTop: 30}}>
+                <BillboardChart data={plot} axis={timeserisAxis}/>
+              </div>
             </CardContent>
             <CardActions>
               <Button size="small"
                       className={classes.action}
-                      onClick={() => fileDownload(JSON.stringify(this.props.data), 'data.csv')}
+                      onClick={() => fileDownload(JSON.stringify(data),
+                          'data.csv')}
               >
                 Download
                 CSV</Button>
